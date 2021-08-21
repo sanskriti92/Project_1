@@ -1,0 +1,134 @@
+Step 1-
+-At first clone the git repository and unzip the file within the directory using "unzip file_name".
+-Now move the unzipped file to a particular folder in hdfs.
+
+Step 2-
+Create Database on hive and under that database create a table.
+
+CREATE TABLE movies (movieId int, title string, genres varchar(200))
+row format delimited
+fields terminated by ',';
+
+CREATE TABLE ratings (userId int, movieId int, rating float,time_stamp varchar(40))
+row format delimited
+fields terminated by ',';
+
+CREATE TABLE tags (userId int, movieId int,tag varchar(40), time_stamp varchar(200))
+row format delimited
+fields terminated by ',';
+
+CREATE TABLE links (movieId int, imdbId int, tmdbId int)
+row format delimited
+fields terminated by ',';
+
+STEP-3 
+loading data into table
+
+LOAD DATA INPATH '/user/maria_dev/project1/movies.csv'
+INTO TABLE project01.movies;
+
+LOAD DATA INPATH '/user/maria_dev/project1/ratings.csv'
+INTO TABLE project01.ratings;
+
+LOAD DATA INPATH '/user/maria_dev/project1/tags.csv'
+INTO TABLE project01.tags;
+	
+LOAD DATA INPATH '/user/maria_dev/project1/links.csv'
+INTO TABLE project01.links;
+
+Solutions:-
+
+01. first 5 entries from movies table
+     select * from movies limit 5;
+
+02. number of unique movies
+      select count(distinct title) as movienames from movies;
+
+03. summary of ratings data
+      desc ratings;
+
+04. minimum rating given to a movie
+      SELECT mo.title,ra.rating 
+      FROM movies as mo
+      INNER JOIN ratings as ra ON mo.movieId = ra.movieId
+      where ra.rating IN (select min(rating) from ratings)
+      group by title,rating;
+
+05. maximum rating given to a movie
+      SELECT mo.title,ra.rating 
+      FROM movies as mo
+      INNER JOIN ratings as ra ON mo.movieId = ra.movieId
+      where ra.rating IN (select max(rating) from ratings)
+      group by title,rating;
+
+06. is any row null in tags
+      select * from tags where tag="NULL";
+
+07. number of unique tags 
+      select count(distinct(tag) from tags;
+
+08. drop null rows from tags and create another table of the resulting rows
+     create table notnull_table 
+     as select userId,movieId,tag,time_stamp from tags where userId !=NULL,movieId != NULL,tag !=  NULL,time_stamp != NULL;
+
+09. filtering to get the list of drama movies
+     SELECT * FROM movies where genres LIKE 'drama';
+
+10. total number of drama movies
+     SELECT COUNT(*) FROM movies where genres LIKE "drama";
+
+11. filtering to get the list of comedy movies
+     SELECT * FROM movies where genres LIKE 'comedy';
+
+12. total no. of comedy movies
+      SELECT COUNT(*) FROM movies where genres LIKE "comedy";
+
+13. search movie id by tag search
+      select movieId,tag from tags group by tag,movieId;
+
+14. displays first 5 data from ratings table
+      select * from ratings limit 5;
+
+15. merging two tables movies and ratings into a new table without the "timestamp" column from the ratings table.
+     create table mrating 
+     as select mo.movieId,mo.title,mo.genres,ra.rating,ra.userId from movies as mo, ratings as ra 
+     where ra.movieId = mo.movieId;
+
+16. display high rated movies (rating > 4)
+      SELECT mo.title,ra.rating 
+      FROM movies as mo
+      INNER JOIN ratings as ra WHERE ra.rating>4 limit 5;
+
+17. display low rated movies (rating < 4)
+      SELECT m.title,r.rating 
+      FROM movies as m
+      INNER JOIN ratings as r WHERE r.rating<4 limit 10;
+
+18. total number of unique movie genres
+      select count(distinct genres) from movies;
+
+19. top 25 most rated movies
+     select movies.movieid,title, avg(rating) 
+     as avg from movies inner join ratings 
+     where movies.movieid=ratings.movieid 
+     group by movies.movieid,title order by avg desc,movieid limit 25;
+
+20. slicing out columns to display only title and genres columns from movies table
+      SELECT title ,genres FROM movies;
+
+21. extract year from title of the movie
+      SELECT substr(split(title, ' \\(')[1],1,4) FROM movies limit 5;
+
+22. count how many times each of genres occur
+      SELECT genres,count(1) as x FROM movies GROUP BY genres ORDER BY x;
+
+23. Which movie received the highest number of ratings?
+      select movies.movieid,title, count(rating) as avg 
+      from movies right join ratings on movies.movieid=ratings.movieid 
+      group by movies.movieid,title order by avg desc,title;
+
+
+
+
+
+
