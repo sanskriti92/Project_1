@@ -1,4 +1,4 @@
-# P1_MoviesData_Analysis
+# Project_1
 ## Project Description
 This project aims to analyse movielens dataset by using Apache Hive .
 
