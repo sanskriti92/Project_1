@@ -21,7 +21,7 @@ This project analyzes the movies data to get the
 ## Getting Started
 1. Clone the project
 ```
-$ git clone https://github.com/sanskritis92/Project_1.git
+$ git clone https://github.com/sanskriti92/Project_1.git
 ```
 
 ## Prerequisite
